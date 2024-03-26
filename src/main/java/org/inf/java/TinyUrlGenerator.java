@@ -1,12 +1,20 @@
 package org.inf.java;
 
-/**
- * Test cases
- * 1. Generate hashcode for long url
- * 2. Test for null or empty input value
- * 3. Return already created tiny url if exists
- */
+
 public class TinyUrlGenerator {
 
+    private String baseUrl;
+    private LongUrlHasher urlHasher;
+    public TinyUrlGenerator(String baseUrl, LongUrlHasher urlHasher) {
+        this.baseUrl = baseUrl;
+        this.urlHasher = urlHasher;
+    }
 
+    public String getShortUrl(String longUrl) {
+        if (longUrl == null || longUrl.isBlank()) {
+            throw new RuntimeException("Invalid null/empty long url");
+        }
+        String shortCode = urlHasher.getShortCode(longUrl);
+        return String.format("%s/%s", baseUrl, shortCode);
+    }
 }

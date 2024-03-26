@@ -7,8 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test cases
  * 1. Generate hashcode for long url (sha256 and md5)
- * 2. Test for null or empty input value
- * 3. Return already created hashcode if exists
+ * 2. Test hasher for consecutive inputs
  */
 public class TestHashCodeGeneration {
 
