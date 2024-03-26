@@ -1,2 +1,2 @@
 # Tiny URL generator
-Just a Java project
+Just a Java project implementing URL shortner
