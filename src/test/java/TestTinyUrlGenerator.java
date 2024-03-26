@@ -1,6 +1,7 @@
 import org.inf.java.HasherFactory;
 import org.inf.java.TinyUrlGenerator;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +24,7 @@ public class TestTinyUrlGenerator {
     }
 
     @Test
+    @DisplayName("When long url is valid expected short url is generated")
     void testShortUrlForValidLongUrl (){
         String longUrl = "https://example.com/visit?new=True";
         String expectedShortUrl = "http://infurl/bee40f54e1408b66ff7d7db8c6c2c523";
@@ -30,13 +32,18 @@ public class TestTinyUrlGenerator {
     }
 
     @Test
+    @DisplayName("When long url is empty/blank short url generator throws exception")
     void testShortUrlForBlankLongUrl (){
-        assertThrowsExactly(RuntimeException.class, ()->tinyUrlGenerator.getShortUrl(""));
-        assertThrowsExactly(RuntimeException.class, ()->tinyUrlGenerator.getShortUrl("  "));
+        var exception = assertThrowsExactly(RuntimeException.class, ()->tinyUrlGenerator.getShortUrl(""));
+        assertEquals("Invalid null/empty long url", exception.getMessage());
+        exception = assertThrowsExactly(RuntimeException.class, ()->tinyUrlGenerator.getShortUrl("  "));
+        assertEquals("Invalid null/empty long url", exception.getMessage());
     }
 
     @Test
+    @DisplayName("When long url is null short url generator throws exception")
     void testShortUrlForNullLongUrl (){
-        assertThrowsExactly(RuntimeException.class, ()->tinyUrlGenerator.getShortUrl(null));
+        var exception = assertThrowsExactly(RuntimeException.class, ()->tinyUrlGenerator.getShortUrl(null));
+        assertEquals("Invalid null/empty long url", exception.getMessage());
     }
 }
