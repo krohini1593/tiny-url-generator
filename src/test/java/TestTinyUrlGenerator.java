@@ -1,11 +1,19 @@
+import com.mongodb.client.MongoClient;
 import org.inf.java.HasherFactory;
 import org.inf.java.TinyUrlGenerator;
+import org.inf.java.db.MongoClientBuilder;
+import org.inf.java.db.ShortUrlDB;
+import org.inf.java.db.ShortUrlMongoStore;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test cases
@@ -15,12 +23,23 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
  */
 public class TestTinyUrlGenerator {
 
+    @Container
+    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:7.0.0");
+
+    private static MongoClient mongoClient;
     private static TinyUrlGenerator tinyUrlGenerator;
+
+    private static ShortUrlDB shortUrlDB;
 
     @BeforeAll
      public static void setUp() {
         final String baseUrl = "http://infurl";
-        tinyUrlGenerator = new TinyUrlGenerator(baseUrl, HasherFactory.getMD5Hasher());
+
+        mongoDBContainer.start();
+        final String mongoDBUrl = mongoDBContainer.getConnectionString();
+        mongoClient = MongoClientBuilder.newClientWithUri(mongoDBUrl).build();
+        shortUrlDB = new ShortUrlMongoStore(mongoClient, "test", "short_to_long_url");
+        tinyUrlGenerator = new TinyUrlGenerator(baseUrl, HasherFactory.getMD5Hasher(), shortUrlDB);
     }
 
     @Test
@@ -45,5 +64,20 @@ public class TestTinyUrlGenerator {
     void testShortUrlForNullLongUrl (){
         var exception = assertThrowsExactly(RuntimeException.class, ()->tinyUrlGenerator.getShortUrl(null));
         assertEquals("Invalid null/empty long url", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("When long url is valid and not present in db new short url is generated")
+    void testNewShortUrlForValidLongUrl() {
+        String longUrl = "https://example.com/visit?new=True";
+        assertEquals(Optional.empty(), shortUrlDB.getShortUrlIfExists(longUrl));
+        String shortUrl = tinyUrlGenerator.getShortUrl(longUrl);
+        assertEquals(shortUrl, shortUrlDB.getShortUrlIfExists(longUrl).get());
+    }
+
+    @AfterAll
+    public static void teardown() {
+        mongoClient.close();
+        mongoDBContainer.stop();
     }
 }

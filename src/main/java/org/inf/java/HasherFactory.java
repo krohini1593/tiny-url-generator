@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Provides utility function to generate SHA256 and MD5 hashes.
  * They are of different lengths and cannot be used as substitutes for one another
- * in a real world tiny url scenario, but this just to demonstrate Java function interface.
+ * in a real world tiny url scenario, but this just to demonstrate Java functional interface.
  */
 public class HasherFactory {
 

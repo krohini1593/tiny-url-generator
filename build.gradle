@@ -10,8 +10,13 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.mongodb:mongodb-driver-sync:5.1.0'
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation "org.testcontainers:testcontainers:1.19.8"
+    testImplementation "org.testcontainers:junit-jupiter:1.19.8"
+    testImplementation "org.testcontainers:localstack:1.19.8"
+    testImplementation "org.testcontainers:mongodb:1.19.8"
 }
 
 test {
